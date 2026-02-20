@@ -29,13 +29,17 @@ char borrar_medio(NODOSIG *);
 void printlista(NODOSIG);
 
 /*funcion del menu de opciones*/
-void instrucciones(void);
+void instrucciones();
 
 // Funcion para comprobar si la lista esta vacia
 int isempty(NODOSIG);
 
 // Funcion para pedir entero
 int solicitar_entero();
+
+NODOSIG insertar_ordenado(NODOSIG, NODOSIG, int);
+
+void ordenar(NODOSIG *, int);
 
 int main()
 {
@@ -114,12 +118,22 @@ int main()
 			}
 			break;
 		case 7:
+			ordenar(&lista, 1);
+			printlista(lista);
+			break;		
+		case 8:
+			ordenar(&lista, 2);
+			printlista(lista);
+			break;		
+		case 9:
+			printlista(lista);
+		case 0:
 			break;
 		default:
 			printf("Opcion no valida. Favor de ingresar otra.\n");
 			system("pause");
 		}
-	} while (op != 7); /*mientras no se presione la opcion de salir*/
+	} while (op != 0); /*mientras no se presione la opcion de salir*/
 
 	system("cls");
 	system("pause");
@@ -134,11 +148,14 @@ void instrucciones()
 	printf("\n\t\t\t Que opcion desea:\n\n"
 		   "\t\t 1. Insertar frente\n"
 		   "\t\t 2. Insertar final\n"
-		   "\t\t 3. Insertar en medio\n"
+		   "\t\t 3. Insertar en medio\n\n"
 		   "\t\t 4. Eliminar frente\n"
 		   "\t\t 5. Eliminar final\n"
-		   "\t\t 6. Eliminar en medio\n"
-		   "\t\t 7. Salir\n");
+		   "\t\t 6. Eliminar en medio\n\n"
+		   "\t\t 7. Ordenar ascendentemente.\n"
+		   "\t\t 8. Ordenar descendentemente.\n\n"
+		   "\t\t 9. Imprimir lista\n"
+		   "\t\t 0. Salir\n");
 }
 
 /*Funcion para insertar un elemento al frente o al inicio de la lista
@@ -189,7 +206,8 @@ void insertar_medio(NODOSIG *lista)
 			previo->siguiente = nuevo; /*el nuevo nodo en su posicion siguiente toma la posicion de actual, lo que quiere decir que se esta*/
 			nuevo->siguiente = actual; /*insertando el nuevo en la parte de enmedio de la lista*/
 		}
-		else{
+		else
+		{
 			printf("\n\n\t No se puede insertar en medio\n");
 		}
 	}
@@ -331,34 +349,96 @@ int isempty(NODOSIG lista)
 
 int solicitar_entero()
 {
-    char Aux[' '];
-    int i, p, y, num;
-    do
-    {
+	char Aux[' '];
+	int i, p, y, num;
+	do
+	{
 		printf("\n\nIntroduzca un valor: ");
-        fflush(stdin);
-        // gets(Aux); // se lee los datos introducidos
-        scanf(" %s", Aux); // se lee los datos introducidos
-        fflush(stdin);
-        y = strlen(Aux);
+		fflush(stdin);
+		// gets(Aux); // se lee los datos introducidos
+		scanf(" %s", Aux); // se lee los datos introducidos
+		fflush(stdin);
+		y = strlen(Aux);
 
-        for (i = 0; i < y; i++)
-        {
-            if (isdigit(Aux[i]))
-                p = 1;
-            else
-                p = 0;
+		for (i = 0; i < y; i++)
+		{
+			if (isdigit(Aux[i]))
+				p = 1;
+			else
+				p = 0;
 
-            if (p == 0)
-            {
-                printf("\n\n Error, dato mal introducido\n\n ");
-                break;
-            }
-        }
-        if (y == 0)
-            p = 0;
-    } while (p == 0);
+			if (p == 0)
+			{
+				printf("\n\n Error, dato mal introducido\n\n ");
+				break;
+			}
+		}
+		if (y == 0)
+			p = 0;
+	} while (p == 0);
 
-    num = atoi(Aux);
-    return num;
+	num = atoi(Aux);
+	return num;
+}
+
+NODOSIG insertar_ordenado(NODOSIG nuevo, NODOSIG ordenado, int orden)
+{
+	nuevo->siguiente = NULL;
+
+	if (orden == 1)
+	{
+		if (ordenado == NULL || ordenado->dato >= nuevo->dato)
+		{
+			nuevo->siguiente = ordenado;
+			return nuevo;
+		}
+		NODOSIG actual = ordenado;
+		while (actual->siguiente != NULL && actual->siguiente->dato < nuevo->dato)
+		{
+			actual = actual->siguiente;
+		}
+		nuevo->siguiente = actual->siguiente;
+		actual->siguiente = nuevo;
+	}
+	else
+	{
+		if (ordenado == NULL || ordenado->dato < nuevo->dato)
+		{
+			nuevo->siguiente = ordenado;
+			return nuevo;
+		}
+		else
+		{
+			NODOSIG actual = ordenado;
+			while (actual->siguiente != NULL && actual->siguiente->dato > nuevo->dato)
+			{
+				actual = actual->siguiente;
+			}
+			nuevo->siguiente = actual->siguiente;
+			actual->siguiente = nuevo;
+		}
+	}
+	return ordenado;
+}
+
+void ordenar(NODOSIG *lista, int orden)
+{
+	if (*lista == NULL)
+	{
+		printf("\nLa lista esta vacia\n.");
+		return;
+	}
+
+	NODOSIG ordenado = NULL;
+	NODOSIG actual = *lista;
+	NODOSIG siguiente;
+
+	while (actual != NULL)
+	{
+		siguiente = actual->siguiente;
+		ordenado = insertar_ordenado(actual, ordenado, orden);
+		actual = siguiente;
+	}
+
+	*lista = ordenado;
 }
