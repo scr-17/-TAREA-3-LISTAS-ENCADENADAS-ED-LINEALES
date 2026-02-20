@@ -133,23 +133,8 @@ int main()
 			}
 			getch();
 			break;
-
-		case 7:
-			printlista(lista);
-			getch();
-			break;
-		case 8:
-			ordenar(&lista, 1);
-			printlista(lista);
-			getch();
-			break;
-		case 9:
-			ordenar(&lista, 2);
-			printlista(lista);
-			getch();
-			break;
 		}
-	} while (op != 10); /*mientras no se presione la opcion de salir*/
+	} while (op != 7); /*mientras no se presione la opcion de salir*/
 	system("cls");
 	printf("\n\n\n\n\n\n\t\t\t\t F I N\n");
 	getch();
