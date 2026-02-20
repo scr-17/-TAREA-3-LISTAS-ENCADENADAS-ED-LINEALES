@@ -3,26 +3,27 @@ eliminacion e impresion en listas enlazadas*/
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
+// #include <conio.h>
+#include <ctype.h>
+#include <string.h>
 
-struct nodo
+typedef struct nodo
 {
 	char dato;				/*Dato a almacenar en el nodo de la lista*/
 	struct nodo *siguiente; /*enlace al siguiente nodo de la lista*/
-};
+} NODO;
 
-typedef struct nodo NODO; /*definicion de la estructura como tipo de dato*/
-typedef NODO *NODOSIG;	  /*Tipo de dato para generar los nodo de la lista*/
+typedef NODO *NODOSIG; /*Tipo de dato para generar los nodo de la lista*/
 
 /*funciones de insercion en la lista*/
-void insertar_frente(NODOSIG *, char);
-void insertar_final(NODOSIG *, char);
-void insertar_medio(NODOSIG *, char);
+void insertar_frente(NODOSIG *);
+void insertar_final(NODOSIG *);
+void insertar_medio(NODOSIG *);
 
 /*funciones de eliminacion en la lista*/
 char borrar_frente(NODOSIG *);
 char borrar_final(NODOSIG *);
-char borrar_medio(NODOSIG *, char);
+char borrar_medio(NODOSIG *);
 
 /*funcion de impresion de la lista*/
 void printlista(NODOSIG);
@@ -33,111 +34,96 @@ void instrucciones(void);
 // Funcion para comprobar si la lista esta vacia
 int isempty(NODOSIG);
 
-NODOSIG insertar_ordenado(NODOSIG, NODOSIG, int);
-
-void ordenar(NODOSIG *, int);
+// Funcion para pedir entero
+int solicitar_entero();
 
 int main()
 {
 	NODOSIG lista = NULL;
 	int op;
-	char ele;
 
 	do
 	{
 		system("cls");
 		instrucciones();
-		printf("\n\n ? ");
-		scanf("%d", &op);
+		op = solicitar_entero();
+
 		switch (op)
 		{
 		/*Los caso del 1 al 3 son de insercion*/
 		case 1:
-			printf("\n Introduzca el elemento: ");
-			scanf("\n %c", &ele);		  /*lectura del elemento a almacenar*/
-			insertar_frente(&lista, ele); /*se envia el inicio de la lista y el valor a insertar*/
-			printlista(lista);			  /*se imprime la lista con el valor insertado*/
-			printf("\n\n Oprima cualquier tecla para continuar ");
-			getch();
+			insertar_frente(&lista); /*se envia el inicio de la lista y el valor a insertar*/
+			printlista(lista);		 /*se imprime la lista con el valor insertado*/
 			break;
 		case 2:
-			printf("\n Introduzca el elemento: ");
-			scanf("\n %c", &ele);
-			insertar_final(&lista, ele);
+			insertar_final(&lista);
 			printlista(lista);
-			printf("\n\n Oprima cualquier tecla para continuar ");
-			getch();
 			break;
 		case 3:
-			printf("\n Introduzca el elemento: ");
-			scanf("\n %c", &ele);
-			insertar_medio(&lista, ele);
+			insertar_medio(&lista);
 			printlista(lista);
-			printf("\n\n Oprima cualquier tecla para continuar ");
-			getch();
 			break;
 		/*casos de borrar elemento de la lista del 4-6*/
 		case 4:
-			if (!isempty(lista))				  /*antes de eliminar el dato se pregunta si hay elementos en la lista*/
+			if (!isempty(lista)) /*antes de eliminar el dato se pregunta si hay elementos en la lista*/
+			{
 				if (borrar_frente(&lista) == 'a') /* se envia la lista y se regresa el valor a para indicar que si se elimino un elemento de la lista*/
 				{
 					printlista(lista); /*Se imprime la lista actualizada*/
-					printf("\n\n Oprima cualquier tecla para continuar ");
-					// getch();
 				}
-				else
-				{ /*regresa un valor diferente de a que indica que era el ultimo valor*/
-					printf("\n\n\n\t\tLista esta vacia\n\n");
-					free(lista);  /*se libera completamente el espacio que ocupaba la lista*/
-					lista = NULL; /*se inicia nuevamente la lista*/
-					printf("\n\n Oprima cualquier tecla para continuar ");
-				}
-			getch();
+			}
+			else
+			{ /*regresa un valor diferente de a que indica que era el ultimo valor*/
+				printf("\n\n\n\t\tLista esta vacia\n\n");
+				free(lista);  /*se libera completamente el espacio que ocupaba la lista*/
+				lista = NULL; /*se inicia nuevamente la lista*/
+				printf("\n\n ");
+				system("pause");
+			}
 			break;
 		case 5:
 			if (!isempty(lista))
+			{
 				if (borrar_final(&lista) == 'a')
-				{
 					printlista(lista);
-					printf("\n\n Oprima cualquier tecla para continuar ");
-					// getch();
-				}
-				else
-				{
-					printf("\n\n\n\t\tLista esta vacia\n\n");
-					free(lista);
-					lista = NULL;
-					printf("\n\n Oprima cualquier tecla para continuar ");
-				}
-			getch();
+			}
+			else
+			{
+				printf("\n\n\n\t\tLista esta vacia\n\n");
+				free(lista);  /*se libera completamente el espacio que ocupaba la lista*/
+				lista = NULL; /*se inicia nuevamente la lista*/
+				printf("\n\n ");
+				system("pause");
+			}
 			break;
 		case 6:
 			if (!isempty(lista))
-			{								   /*se pregunta si hay elementos en la lista*/
-				printf("Elemento a borrar: "); /*Se solicita el numero que se desea borrar*/
-				scanf("\n%c", &ele);		   /*se lee el elemento a borrar*/
-				if (borrar_medio(&lista, ele))
-				{							   /*se envia la lista y el elemento a borrar*/
-					printf("%c borrado", ele); /*se regresa un valor 1 si este elemento se borro*/
-					printlista(lista);		   /*y se indica que el elemento fue borrado y se imprime la lista actualizada*/
+			{ /*se pregunta si hay elementos en la lista*/
+				if (borrar_medio(&lista))
+				{					   /*se envia la lista y el elemento a borrar*/
+					printlista(lista); /*y se indica que el elemento fue borrado y se imprime la lista actualizada*/
 				}
-				else /*se regreso un valor diferente de 1, lo que indica que no se encontro el elemento a borrar*/
-					printf("%c no existe \n\n", ele);
 			}
 			else
 			{ /*cuando la lista esta vacia se imprime el mesaje*/
-				printf("Lista esta vacia\n\n");
-				free(lista);  /*se libera el espacio ocupado por la lista*/
-				lista = NULL; /*se inicia la lista nuevamente*/
-				printf("\n\n Oprima cualquier tecla para continuar ");
+				printf("\n\n\n\t\tLista esta vacia\n\n");
+				free(lista);  /*se libera completamente el espacio que ocupaba la lista*/
+				lista = NULL; /*se inicia nuevamente la lista*/
+				printf("\n\n ");
+				system("pause");
 			}
-			getch();
 			break;
+		case 7:
+			break;
+		default:
+			printf("Opcion no valida. Favor de ingresar otra.\n");
+			system("pause");
 		}
 	} while (op != 7); /*mientras no se presione la opcion de salir*/
+
 	system("cls");
-	printf("\n\n\n\n\n\n\t\t\t\t F I N\n");
-	getch();
+	system("pause");
+
 	return 0;
 }
 
@@ -145,21 +131,25 @@ int main()
 void instrucciones()
 {
 	printf("\n\n\n\t\t OPERACIONES CON LISTAS ENCADENADAS\n\n");
-	printf("\n\t\t\t Que opcion desea :\n\n"
-		   "   \t\t 1 insertar frente\n"
-		   "   \t\t 2 insertar final\n"
-		   "   \t\t 3 insertat en medio\n"
-		   "   \t\t 4 eliminar frente\n"
-		   "   \t\t 5 eliminar final\n"
-		   "   \t\t 6 eliminar en medio\n"
-		   "   \t\t 7 salir\n");
+	printf("\n\t\t\t Que opcion desea:\n\n"
+		   "\t\t 1. Insertar frente\n"
+		   "\t\t 2. Insertar final\n"
+		   "\t\t 3. Insertar en medio\n"
+		   "\t\t 4. Eliminar frente\n"
+		   "\t\t 5. Eliminar final\n"
+		   "\t\t 6. Eliminar en medio\n"
+		   "\t\t 7. Salir\n");
 }
 
 /*Funcion para insertar un elemento al frente o al inicio de la lista
   recibe como parametro por referencia la lista y por valor
   el valor a insertar*/
-void insertar_frente(NODOSIG *lista, char valor)
+void insertar_frente(NODOSIG *lista)
 {
+	char valor;
+	printf("\n Introduzca el elemento: ");
+	scanf("\n %c", &valor); /*lectura del elemento a almacenar*/
+
 	NODOSIG nuevo;				  /*variables temporales para la insercion en la lista del nuevo nodo*/
 	nuevo = malloc(sizeof(NODO)); /*Esta operacion crea el nuevo nodo que sera insertado en la lista*/
 	if (nuevo != NULL)
@@ -175,8 +165,12 @@ void insertar_frente(NODOSIG *lista, char valor)
 /*Funcion para insertar un elemento en medio de la lista
   recibe como parametro por referencia la lista y
   por valor el valor a insertar*/
-void insertar_medio(NODOSIG *lista, char valor)
+void insertar_medio(NODOSIG *lista)
 {
+	char valor;
+	printf("\n Introduzca el elemento: ");
+	scanf("\n %c", &valor);
+
 	NODOSIG nuevo, previo, actual; /*variables auxiliares para recorrer la lista e insertar el nodo*/
 	nuevo = malloc(sizeof(NODO));  /*crea el nuevo nodo*/
 	if (nuevo != NULL)
@@ -195,8 +189,9 @@ void insertar_medio(NODOSIG *lista, char valor)
 			previo->siguiente = nuevo; /*el nuevo nodo en su posicion siguiente toma la posicion de actual, lo que quiere decir que se esta*/
 			nuevo->siguiente = actual; /*insertando el nuevo en la parte de enmedio de la lista*/
 		}
-		else
+		else{
 			printf("\n\n\t No se puede insertar en medio\n");
+		}
 	}
 }
 
@@ -204,8 +199,12 @@ void insertar_medio(NODOSIG *lista, char valor)
   recibe como parametro por referencia la lista y por valor
   el valor a insertar, para ser insertado el elemento en la
   lista este debe recorrer toda la lista hasta llegar al final de ella*/
-void insertar_final(NODOSIG *lista, char valor)
+void insertar_final(NODOSIG *lista)
 {
+	char valor;
+	printf("\n Introduzca el elemento: ");
+	scanf("\n %c", &valor);
+
 	NODOSIG nuevo, previo, actual; /*variables auxiliares para recorrer y crear el nodo en la lista*/
 	nuevo = malloc(sizeof(NODO));  /*se genera el espacio del nuevo nodo*/
 	if (nuevo != NULL)
@@ -248,6 +247,8 @@ void printlista(NODOSIG actual)
 		}
 		printf("NULL \n\n");
 	}
+	printf("\n\n");
+	system("pause");
 }
 
 /*Funcion para borrar un elemento al principio de la lista
@@ -294,8 +295,12 @@ char borrar_final(NODOSIG *lista)
 /*Funcion para borrar un elemento elejido por el usuario
   recibe como parametro por referencia la lista y por
   valor el valor a eliminar de la lista*/
-char borrar_medio(NODOSIG *lista, char valor)
+char borrar_medio(NODOSIG *lista)
 {
+	char valor;
+	printf("Elemento a borrar: "); /*Se solicita el numero que se desea borrar*/
+	scanf("\n%c", &valor);		   /*se lee el elemento a borrar*/
+
 	NODOSIG previo, actual, temporal; /*variables auxiliares*/
 	previo = *lista;				  /*previo toma el inicio de la lista*/
 	actual = (*lista)->siguiente;	  /*actual toma la posicion del siguiente nodo*/
@@ -309,8 +314,11 @@ char borrar_medio(NODOSIG *lista, char valor)
 		temporal = actual;					   /*temporal toma la posicion de alctual que es el nodo a borrar*/
 		previo->siguiente = actual->siguiente; /*previo en siguiente toma el enlace al siguiente nodo*/
 		free(temporal);						   /*de actual y entonces se libera el espacio que ocupaba el nodo a borrar*/
+		printf("%c borrado", valor);		   /*se regresa un valor 1 si este elemento se borro*/
 		return (valor);						   /*regresa el elemento borrado*/
 	}
+
+	printf("%c no existe \n\n", valor);
 	return '\0'; /*regresa este valor para indicar que es el ultimo nodo en la lista*/
 }
 
@@ -321,62 +329,36 @@ int isempty(NODOSIG lista)
 	return lista == NULL; /*pregunta si hay elemento en la lista, regresa nulo si no hay*/
 } /*de lo contrario regresa un valor diferente*/
 
-NODOSIG insertar_ordenado(NODOSIG nuevo, NODOSIG ordenado, int orden)
+int solicitar_entero()
 {
-	nuevo->siguiente = NULL;
+    char Aux[' '];
+    int i, p, y, num;
+    do
+    {
+		printf("\n\nIntroduzca un valor: ");
+        fflush(stdin);
+        // gets(Aux); // se lee los datos introducidos
+        scanf(" %s", Aux); // se lee los datos introducidos
+        fflush(stdin);
+        y = strlen(Aux);
 
-	if (orden == 1)
-	{
-		if (ordenado == NULL || ordenado->dato >= nuevo->dato)
-		{
-			nuevo->siguiente = ordenado;
-			return nuevo;
-		}
-		NODOSIG actual = ordenado;
-		while (actual->siguiente != NULL && actual->siguiente->dato < nuevo->dato)
-		{
-			actual = actual->siguiente;
-		}
-		nuevo->siguiente = actual->siguiente;
-		actual->siguiente = nuevo;
-	}
-	else
-	{
-		if (ordenado == NULL || ordenado->dato < nuevo->dato)
-		{
-			nuevo->siguiente = ordenado;
-			return nuevo;
-		}
-		else
-		{
-			NODOSIG actual = ordenado;
-			while (actual->siguiente != NULL && actual->siguiente->dato > nuevo->dato)
-			{
-				actual = actual->siguiente;
-			}
-			nuevo->siguiente = actual->siguiente;
-			actual->siguiente = nuevo;
-		}
-	}
-	return ordenado;
-}
+        for (i = 0; i < y; i++)
+        {
+            if (isdigit(Aux[i]))
+                p = 1;
+            else
+                p = 0;
 
-void ordenar(NODOSIG *lista, int orden)
-{
-	if (*lista == NULL)
-	{
-		return;
-	}
+            if (p == 0)
+            {
+                printf("\n\n Error, dato mal introducido\n\n ");
+                break;
+            }
+        }
+        if (y == 0)
+            p = 0;
+    } while (p == 0);
 
-	NODOSIG ordenado = NULL;
-	NODOSIG actual = *lista;
-
-	while (actual != NULL)
-	{
-		NODOSIG siguiente = actual->siguiente;
-		ordenado = insertar_ordenado(actual, ordenado, orden);
-		actual = siguiente;
-	}
-
-	*lista = ordenado;
+    num = atoi(Aux);
+    return num;
 }
