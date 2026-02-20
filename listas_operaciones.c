@@ -33,6 +33,10 @@ void instrucciones(void);
 // Funcion para comprobar si la lista esta vacia
 int isempty(NODOSIG);
 
+NODOSIG insertar_ordenado(NODOSIG, NODOSIG, int);
+
+void ordenar(NODOSIG *, int);
+
 int main()
 {
 	NODOSIG lista = NULL;
@@ -129,8 +133,23 @@ int main()
 			}
 			getch();
 			break;
+
+		case 7:
+			printlista(lista);
+			getch();
+			break;
+		case 8:
+			ordenar(&lista, 1);
+			printlista(lista);
+			getch();
+			break;
+		case 9:
+			ordenar(&lista, 2);
+			printlista(lista);
+			getch();
+			break;
 		}
-	} while (op != 7); /*mientras no se presione la opcion de salir*/
+	} while (op != 10); /*mientras no se presione la opcion de salir*/
 	system("cls");
 	printf("\n\n\n\n\n\n\t\t\t\t F I N\n");
 	getch();
@@ -316,3 +335,63 @@ int isempty(NODOSIG lista)
 {
 	return lista == NULL; /*pregunta si hay elemento en la lista, regresa nulo si no hay*/
 } /*de lo contrario regresa un valor diferente*/
+
+NODOSIG insertar_ordenado(NODOSIG nuevo, NODOSIG ordenado, int orden)
+{
+	nuevo->siguiente = NULL;
+
+	if (orden == 1)
+	{
+		if (ordenado == NULL || ordenado->dato >= nuevo->dato)
+		{
+			nuevo->siguiente = ordenado;
+			return nuevo;
+		}
+		NODOSIG actual = ordenado;
+		while (actual->siguiente != NULL && actual->siguiente->dato < nuevo->dato)
+		{
+			actual = actual->siguiente;
+		}
+		nuevo->siguiente = actual->siguiente;
+		actual->siguiente = nuevo;
+	}
+	else
+	{
+		if (ordenado == NULL || ordenado->dato < nuevo->dato)
+		{
+			nuevo->siguiente = ordenado;
+			return nuevo;
+		}
+		else
+		{
+			NODOSIG actual = ordenado;
+			while (actual->siguiente != NULL && actual->siguiente->dato > nuevo->dato)
+			{
+				actual = actual->siguiente;
+			}
+			nuevo->siguiente = actual->siguiente;
+			actual->siguiente = nuevo;
+		}
+	}
+	return ordenado;
+}
+
+void ordenar(NODOSIG *lista, int orden)
+{
+	if (*lista == NULL)
+	{
+		return;
+	}
+
+	NODOSIG ordenado = NULL;
+	NODOSIG actual = *lista;
+
+	while (actual != NULL)
+	{
+		NODOSIG siguiente = actual->siguiente;
+		ordenado = insertar_ordenado(actual, ordenado, orden);
+		actual = siguiente;
+	}
+
+	*lista = ordenado;
+}
