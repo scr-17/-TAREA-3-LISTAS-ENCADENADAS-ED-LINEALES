@@ -75,6 +75,11 @@ int main()
 				{
 					printlista(lista); /*Se imprime la lista actualizada*/
 				}
+				else
+				{
+					printf("\n\nSe vacio la lista\n\n");
+					system("pause");
+				}
 			}
 			else
 			{ /*regresa un valor diferente de a que indica que era el ultimo valor*/
@@ -89,7 +94,14 @@ int main()
 			if (!isempty(lista))
 			{
 				if (borrar_final(&lista) == 'a')
+				{
 					printlista(lista);
+				}
+				else
+				{
+					printf("\n\nSe vacio la lista\n\n");
+					system("pause");
+				}
 			}
 			else
 			{
@@ -106,6 +118,11 @@ int main()
 				if (borrar_medio(&lista))
 				{					   /*se envia la lista y el elemento a borrar*/
 					printlista(lista); /*y se indica que el elemento fue borrado y se imprime la lista actualizada*/
+				}
+				else
+				{
+					printf("\n\nSe vacio la lista\n\n");
+					system("pause");
 				}
 			}
 			else
@@ -284,6 +301,9 @@ char borrar_frente(NODOSIG *lista)
 		free(temporal);				  /*se libera el espacio ocupado por el nodo*/
 		return 'a';					  /*se retorna un valor para indicar que no era al ultimo nodo en la lista*/
 	}
+
+	free(*lista);
+	*lista = NULL;
 	return '\0'; /*este valor de retorno indica que es el ultimo nodo en la lista*/
 }
 
@@ -307,6 +327,9 @@ char borrar_final(NODOSIG *lista)
 		// free(temporal);/*se libera el espacio del nodo a borrar*/
 		return 'a'; /*se regresa un valor para indicar que no era el ultimo nodo*/
 	}
+
+	free(*lista);
+	*lista = NULL;
 	return '\0'; /*se regresa este valor para indicar que es el ultimo nodo*/
 }
 
@@ -327,13 +350,21 @@ char borrar_medio(NODOSIG *lista)
 		previo = actual;			/*previo toma la posicion de actual*/
 		actual = actual->siguiente; /*actual avanza al siguiente nodo*/
 	}
-	if (actual != NULL && actual->siguiente != NULL)
+	if (actual != NULL)
 	{										   /*pregunta si no es el ultimo nodo en la lista*/
 		temporal = actual;					   /*temporal toma la posicion de alctual que es el nodo a borrar*/
 		previo->siguiente = actual->siguiente; /*previo en siguiente toma el enlace al siguiente nodo*/
 		free(temporal);						   /*de actual y entonces se libera el espacio que ocupaba el nodo a borrar*/
-		printf("%c borrado", valor);		   /*se regresa un valor 1 si este elemento se borro*/
+		printf("%c borrado\n\n", valor);		   /*se regresa un valor 1 si este elemento se borro*/
 		return (valor);						   /*regresa el elemento borrado*/
+	}
+	else if (previo->dato == valor)
+	{
+		temporal = previo;
+		*lista = NULL;
+		free(temporal);
+		printf("%c borrado\n\n", valor);		   /*se regresa un valor 1 si este elemento se borro*/
+		return (valor);		
 	}
 
 	printf("%c no existe \n\n", valor);
