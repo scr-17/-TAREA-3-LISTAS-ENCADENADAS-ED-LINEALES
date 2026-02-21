@@ -37,8 +37,10 @@ int isempty(NODOSIG);
 // Funcion para pedir entero
 int solicitar_entero();
 
+//Funcion de apoyo a la funcion de ordenar
 NODOSIG insertar_ordenado(NODOSIG, NODOSIG, int);
 
+//Funcion para ordenar la lista en orden ascendente o descendente
 void ordenar(NODOSIG *, int);
 
 int main()
@@ -75,9 +77,9 @@ int main()
 				{
 					printlista(lista); /*Se imprime la lista actualizada*/
 				}
-				else
+				else /*Si recibe un valor que no sea a, significa que era el ultimo elemento y se vacio la lista*/
 				{
-					printf("\n\nSe vacio la lista\n\n");
+					printf("\n\nSe vacio la lista\n\n"); 
 					system("pause");
 				}
 			}
@@ -116,7 +118,7 @@ int main()
 			if (!isempty(lista))
 			{ /*se pregunta si hay elementos en la lista*/
 				if (borrar_medio(&lista))
-				{					   /*se envia la lista y el elemento a borrar*/
+				{					   /*se envia la lista*/
 					printlista(lista); /*y se indica que el elemento fue borrado y se imprime la lista actualizada*/
 				}
 				else
@@ -134,16 +136,19 @@ int main()
 				system("pause");
 			}
 			break;
+		/*casos de ordenar la lista del 7-8*/
 		case 7:
-			ordenar(&lista, 1);
+			/*La funcion ordenar recibe dos argumentos, que indican en que orden se ordenaran*/
+			ordenar(&lista, 1); /*Como en este caso recibe un 1, la funcion ordenara la lista en orden ascendente*/
 			printlista(lista);
-			break;		
+			break;	
 		case 8:
-			ordenar(&lista, 2);
+			ordenar(&lista, 2); /*Como en este caso se recibe un 2, se ordenara en orden descendente*/
 			printlista(lista);
-			break;		
+			break;	
+		/*casos de impresion del 9*/		
 		case 9:
-			printlista(lista);
+			printlista(lista); /*Se imprime la lista con el orden que contiene*/
 		case 0:
 			break;
 		default:
@@ -378,6 +383,8 @@ int isempty(NODOSIG lista)
 	return lista == NULL; /*pregunta si hay elemento en la lista, regresa nulo si no hay*/
 } /*de lo contrario regresa un valor diferente*/
 
+/*funcion para leer enteros con validacion, asegurandonos que solo puedan ser enteros 
+  sin tener problemas con el programa*/
 int solicitar_entero()
 {
 	char Aux[' '];
@@ -386,14 +393,13 @@ int solicitar_entero()
 	{
 		printf("\n\nIntroduzca un valor: ");
 		fflush(stdin);
-		// gets(Aux); // se lee los datos introducidos
 		scanf(" %s", Aux); // se lee los datos introducidos
 		fflush(stdin);
 		y = strlen(Aux);
 
 		for (i = 0; i < y; i++)
 		{
-			if (isdigit(Aux[i]))
+			if (isdigit(Aux[i])) /*Con una bandera valida que el caracter leido de una cadena sea un digito*/
 				p = 1;
 			else
 				p = 0;
@@ -408,7 +414,7 @@ int solicitar_entero()
 			p = 0;
 	} while (p == 0);
 
-	num = atoi(Aux);
+	num = atoi(Aux); /*Regresa la conversion de la cadena introducida a un digito */
 	return num;
 }
 
@@ -416,23 +422,30 @@ NODOSIG insertar_ordenado(NODOSIG nuevo, NODOSIG ordenado, int orden)
 {
 	nuevo->siguiente = NULL;
 
+	/*Caso de orden ascendente*/
 	if (orden == 1)
 	{
+		/*Si la lista está vacía o el nuevo dato es menor que el primero,
+         el nuevo nodo se convierte en la nueva cabeza.*/
 		if (ordenado == NULL || ordenado->dato >= nuevo->dato)
 		{
 			nuevo->siguiente = ordenado;
 			return nuevo;
 		}
+		/*Si no es el primero, buscamos la posicion correcta*/
 		NODOSIG actual = ordenado;
 		while (actual->siguiente != NULL && actual->siguiente->dato < nuevo->dato)
 		{
 			actual = actual->siguiente;
 		}
+		/*Insertamos el nodo nuevo entre actual*/
 		nuevo->siguiente = actual->siguiente;
 		actual->siguiente = nuevo;
 	}
+	/*Caso de orden descendente*/
 	else
 	{
+		/*La logica ahora verifica que el dato sea mayor que el primero*/
 		if (ordenado == NULL || ordenado->dato < nuevo->dato)
 		{
 			nuevo->siguiente = ordenado;
@@ -449,9 +462,11 @@ NODOSIG insertar_ordenado(NODOSIG nuevo, NODOSIG ordenado, int orden)
 			actual->siguiente = nuevo;
 		}
 	}
-	return ordenado;
+	return ordenado; /*Retornamos la cabeza*/
 }
 
+/*Funcion para ordenar la lista siguiendo el algoritmo de insertion sort.
+   Este va insertando con orden en la lista dependiendo del orden dado*/
 void ordenar(NODOSIG *lista, int orden)
 {
 	if (*lista == NULL)
@@ -460,16 +475,23 @@ void ordenar(NODOSIG *lista, int orden)
 		return;
 	}
 
+	/*Ordenado es una lista auxiliar, actual para recorrer la lista
+	   y siguiente para no perder el rastro de la lista original*/
 	NODOSIG ordenado = NULL;
 	NODOSIG actual = *lista;
 	NODOSIG siguiente;
 
+	/*Se recore la lista nodo por nodo*/
 	while (actual != NULL)
 	{
-		siguiente = actual->siguiente;
+		/*Se guarda el siguiente nodo antes de mover el actual a la lista ordenada*/
+		siguiente = actual->siguiente; 
+		/*Extraemos el nodo actual y lo colocamos en su posicion ordenada*/
 		ordenado = insertar_ordenado(actual, ordenado, orden);
+		/*Saltamos al siguiente nodo de la lista original*/
 		actual = siguiente;
 	}
 
+	/*Se actualiz el puntero original para que apunte a la lista ordenada*/
 	*lista = ordenado;
 }
